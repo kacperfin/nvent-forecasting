@@ -2,6 +2,7 @@
 data/
 knowledge_base/
 legacy/
+models/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

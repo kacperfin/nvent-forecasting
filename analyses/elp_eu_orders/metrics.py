@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from sklearn.metrics import root_mean_squared_error, mean_absolute_error, mean_absolute_percentage_error, r2_score
 from typing import NamedTuple
 
