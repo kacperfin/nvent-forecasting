@@ -1,5 +1,6 @@
 TARGET = 'y' # Target column name
 COLUMNS_TO_DROP = [TARGET, 'count_of_orders']
+DATETIME_COLUMN_NAME = 'ds'
 
 # Feature engineering
 LAGS = [182]
