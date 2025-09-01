@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.metrics import root_mean_squared_error, mean_absolute_error, mean_absolute_percentage_error, r2_score
+
 from typing import NamedTuple
 
 class Scores(NamedTuple):

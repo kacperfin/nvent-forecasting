@@ -1,5 +1,5 @@
-import numpy as np
 import pandas as pd
+import numpy as np
 
 def add_time_features(df: pd.DataFrame) -> None:
     df['is_weekend'] = df.index.day_of_week >= 5
@@ -12,13 +12,3 @@ def add_time_features(df: pd.DataFrame) -> None:
     df['day'] = df.index.day
     df['day_of_year'] = df.index.day_of_year
     df['week_of_year'] = df.index.isocalendar().week
-
-def add_lags(df: pd.DataFrame, lags: list[int], columns: list[str]):
-    for column in columns:
-        for lag in lags:
-            df[f'{column}_lag_{lag}'] = df[column].shift(lag)
-
-def add_diffs(df: pd.DataFrame, diffs: list[int], columns: list[str]):
-    for column in columns:
-        for diff in diffs:
-            df[f'{column}_diff_{diff}'] = df[column].diff(diff)
