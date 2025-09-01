@@ -12,10 +12,7 @@ class DataHandler():
             df = self._do_manual_adjustments(df)
 
         if agg:
-            if agg.upper() == 'D':
-                df = df.resample('D').sum()
-            elif agg.upper() in ['M', 'ME']:
-                df = df.resample('ME').sum()
+            df = df.resample(agg).sum()
 
         return df
     
