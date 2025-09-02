@@ -3,6 +3,7 @@ from sklearn.model_selection import TimeSeriesSplit
 DEFAULT_CONFIG = {
     'target': 'y', # Target column name
     'datetime_column_name': 'ds',
+    'aggregation': 'D',
     'columns_to_lag': ['y', 'count_of_orders'],
     'columns_to_drop': ['y', 'count_of_orders'],
 

@@ -17,8 +17,6 @@ def plot_train_val_test(ax: Axes, target: str, train: pd.DataFrame, val: pd.Data
     plot_train_val(ax, target, train, val, **kwargs)
     test[target].plot(ax=ax, color=color_palette[4], label='Test data', **kwargs)
 
-    _format_axis(ax)
-
 def plot_data_split(target: str, cv: TimeSeriesSplit, df: pd.DataFrame, figsize: tuple[int, int] = (20, 3), **kwargs) -> None:
     n_splits = cv.get_n_splits()
     

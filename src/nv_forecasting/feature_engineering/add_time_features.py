@@ -3,7 +3,6 @@ import numpy as np
 
 def add_time_features(df: pd.DataFrame) -> None:
     df['is_weekend'] = df.index.day_of_week >= 5
-    df['is_workday'] = ~df.is_weekend
     df['years_from_start'] = df.index.year - np.min(df.index.year)
     df['quarter'] = (df.index.month - 1) // 3 + 1
     df['quarter'] = df.quarter.astype('category')
