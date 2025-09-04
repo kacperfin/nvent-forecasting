@@ -7,6 +7,34 @@ from sklearn.model_selection import TimeSeriesSplit
 
 color_palette = sns.color_palette()
 
+def plot_cross_validation_results(y: pd.DataFrame, target: str, outer_cv: TimeSeriesSplit, cv_summary: pd.DataFrame, models_names_list: list[str], figsize: tuple[int, int] = (20, 3), **kwargs) -> None:
+    n_outer_splits = outer_cv.get_n_splits()
+    fig, ax = plt.subplots(n_outer_splits, 1, figsize=(figsize[0], figsize[1]*n_outer_splits), sharex=True)
+
+    for outer_fold, (train_and_val_idx, test_idx) in enumerate(outer_cv.split(y)):
+        y_train = y.iloc[train_and_val_idx]
+        y_test = y.iloc[test_idx]
+
+        y_train[target].plot(ax=ax[outer_fold], color=color_palette[0], label='Train data', **kwargs)
+        y_test[target].plot(ax=ax[outer_fold], color=color_palette[0], label='Test data', alpha=0.5, **kwargs)
+
+        pred_color = color_palette[1]
+        pred_style = '--'
+        pred_alpha = 1
+
+        for i, model_name in enumerate(models_names_list):
+            if i == 1:
+                pred_color = '#000'
+                pred_style = '-'
+                pred_alpha = 0.2
+
+            mask = (cv_summary.model == model_name) & (cv_summary.outer_fold == outer_fold)
+            y_pred = cv_summary.loc[mask, 'y_pred'].iloc[0]
+            y_pred = pd.Series(data=y_pred, index=y_test.index)
+            y_pred.plot(ax=ax[outer_fold], color=pred_color, label=model_name, style=pred_style, alpha=pred_alpha, **kwargs)
+
+        _format_axis(ax[outer_fold])
+
 def plot_train_val(ax: Axes, target: str, train: pd.DataFrame, val: pd.DataFrame, **kwargs) -> None:
     train[target].plot(ax=ax, color=color_palette[0], label='Train data', **kwargs)
     val[target].plot(ax=ax, color=color_palette[1], label='Validation data', **kwargs)
@@ -14,8 +42,11 @@ def plot_train_val(ax: Axes, target: str, train: pd.DataFrame, val: pd.DataFrame
     _format_axis(ax)
 
 def plot_train_val_test(ax: Axes, target: str, train: pd.DataFrame, val: pd.DataFrame, test: pd.DataFrame, **kwargs) -> None:
-    plot_train_val(ax, target, train, val, **kwargs)
+    train[target].plot(ax=ax, color=color_palette[0], label='Train data', **kwargs)
+    val[target].plot(ax=ax, color=color_palette[1], label='Validation data', **kwargs)
     test[target].plot(ax=ax, color=color_palette[4], label='Test data', **kwargs)
+
+    _format_axis(ax)
 
 def plot_data_split(target: str, cv: TimeSeriesSplit, df: pd.DataFrame, figsize: tuple[int, int] = (20, 3), **kwargs) -> None:
     n_splits = cv.get_n_splits()
