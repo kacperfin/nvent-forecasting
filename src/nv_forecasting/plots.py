@@ -7,16 +7,21 @@ from sklearn.model_selection import TimeSeriesSplit
 
 color_palette = sns.color_palette()
 
-def plot_cross_validation_results(y: pd.DataFrame, target: str, outer_cv: TimeSeriesSplit, cv_summary: pd.DataFrame, models_names_list: list[str], figsize: tuple[int, int] = (20, 3), **kwargs) -> None:
+def plot_cross_validation_results(y: pd.DataFrame, target: str, outer_cv: TimeSeriesSplit, cv_summary: pd.DataFrame, models_names_list: list[str], figsize: tuple[int, int] = (20, 3), agg: str = None, **kwargs) -> None:
     n_outer_splits = outer_cv.get_n_splits()
     fig, ax = plt.subplots(n_outer_splits, 1, figsize=(figsize[0], figsize[1]*n_outer_splits), sharex=True)
 
     for outer_fold, (train_and_val_idx, test_idx) in enumerate(outer_cv.split(y)):
         y_train = y.iloc[train_and_val_idx]
         y_test = y.iloc[test_idx]
+        test_index = y_test.index
+
+        if agg is not None:
+            y_train = y_train.resample(agg).mean()
+            y_test = y_test.resample(agg).mean()
 
         y_train[target].plot(ax=ax[outer_fold], color=color_palette[0], label='Train data', **kwargs)
-        y_test[target].plot(ax=ax[outer_fold], color=color_palette[0], label='Test data', alpha=0.5, **kwargs)
+        y_test[target].plot(ax=ax[outer_fold], color=color_palette[0], label='Test data', alpha=0.3, **kwargs)
 
         pred_color = color_palette[1]
         pred_style = '--'
@@ -30,8 +35,10 @@ def plot_cross_validation_results(y: pd.DataFrame, target: str, outer_cv: TimeSe
 
             mask = (cv_summary.model == model_name) & (cv_summary.outer_fold == outer_fold)
             y_pred = cv_summary.loc[mask, 'y_pred'].iloc[0]
-            y_pred = pd.Series(data=y_pred, index=y_test.index)
-            y_pred.plot(ax=ax[outer_fold], color=pred_color, label=model_name, style=pred_style, alpha=pred_alpha, **kwargs)
+            y_pred = pd.DataFrame(data=y_pred, index=test_index, columns=[target])
+            if agg is not None:
+                y_pred = y_pred.resample(agg).mean()
+            y_pred[target].plot(ax=ax[outer_fold], color=pred_color, label=model_name, style=pred_style, alpha=pred_alpha, **kwargs)
 
         _format_axis(ax[outer_fold])
 
